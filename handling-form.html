@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<style>
+  form {
+  border: 1px solid #ddd;
+  padding:5px;
+  width:225px;
+  background: #efefef;
+  }
+  label{
+  display: block;
+  margin-top: 5px;
+  }
+  input, textarea, select, option {
+  min-width: 200px;
+  }
+  </style>
+<body>
+   <div id="app">
+   <form @submit="submitForm($event)" ref="formBook" action="http://example/com/add-product" method="post">
+     
+    <p v-if="errors.length">
+      <b>Please Correct this following error(s):</b>
+      <ul>
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
+    </p>
+
+     <label for="title">title:</label>
+     <input type="text" name="title" ref="title" v-model="title">
+     <label for="description">Description:</label>
+     <textarea v-model="description" name="description" ref="description"></textarea>
+     <label>Authors:</label>
+      <input type="text" v-model="authors" name="authors" ref="authors">
+      <label>Price:</label>
+      <input type="number" v-model.number="price" name="price" ref="price">
+      <label>Categories</label>
+      <select v-model="categories" multiple name="categories" ref="categories">
+        <option v-for="option in options" :value="option.value">{{option.text}}</option>
+      </select>
+      <label>Cover:</label>
+      <input type="file" name="cover" ref="cover">
+      <label></label>
+      <input type="submit" value="submit">
+   </form>
+  </div>
+   <script>
+     var vm = new Vue({
+       el: '#app',
+       data: {
+         title: 'Google Glass Wuth VueJS',
+         description: 'Control Glass With VueJS',
+         authors: 'Ardiansyah',
+         price: 75000,
+         categories:[],
+         options:[
+           { text: 'Graphics Programming', value: '01' },
+           { text: 'Mobile Application Development', value: '02' },
+           { text: 'Virtual and Augmented Reality', value: '03' }
+         ],
+         errors:[]
+       },
+       methods: {
+         submitForm(event){
+           this.errors = []
+           if(this.title.length < 3){
+             this.errors.push('Title minimal 3 Karakter !')
+             this.$refs.title.select()
+           }else if(this.description.length > 500){
+             this.errors.push('Description Maximal 500 Karakter !')
+             this.$refs.description.select()
+           }else if(this.authors.length < 3){
+             this.errors.push('Authors minimal 3 karakter!')
+             this.$refs.authors.select()
+           }else if(this.price < 0){
+             this.errors.push('Price tidak boleh minus !')
+             this.$refs.price.select()
+           }else if(this.categories.length === 0){
+             this.errors.push('Pilih minimal 1 category')
+             this.$refs.categories.focus()
+           }
+
+           if(this.errors.length === 0){
+             //alert('Terima Kasih telah mengisi data dengan benar !')
+             //persiakan data
+            let formBook = this.$refs.formBook
+            formData = new FormData(formBook);
+            let cover = this.$refs.cover.files[0];
+            formData.append("cover",cover);
+            // Kirim data ke server
+            let xhttp = new XMLHttpRequest()
+            xhttp.onreadystatechange = function () {
+              if(this.readyState == 4 && this.status == 200){
+                console.log(this.responseText);
+              }
+            }
+            // sesuaikan dengan lokasi file index.php di lokasi komputer kamu
+            xhttp.open("POST","http://localhost/vuejs/index.php",true)
+            // kirim object formData
+            xhttp.send(formData)
+           }
+           event.preventDefault();
+         }
+       },
+     })
+   </script>
+</body>
+</html>
