@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Router1</title>
+  <title>state</title>
   <!-- Menyisipkan Vuejs dari CDN -->
   <script src="../lib/vue.js"></script>
   <script src="../lib/vuex.js"></script>
@@ -20,7 +20,7 @@
   </div>
 
   <script type="module">
-    import { hello } from './hello.js'
+    import { Hello } from './hello.js'
 
     const store = new Vuex.Store({
       state: {
@@ -37,11 +37,16 @@
       el: '#app',
       store,
       components: {
-        'hello': hello
+        'hello': Hello
+      },
+      computed: {
+        counter() {
+          return store.state.counter
+        }
       },
       template: `
                <div>
-                {{counter}}
+                {{ counter }}
                 <button @click="increment()"> + </button>
                 <hello></hello>
               </div>`,

@@ -1,4 +1,4 @@
-export const hello = {
+export const Hello = {
   template: `
        <p>
          State counter pada hello :
