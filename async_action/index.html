@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>state</title>
+  <!-- Menyisipkan Vuejs dari CDN -->
+  <script src="../lib/vue.js"></script>
+  <script src="../lib/vuex.js"></script>
+  <script src="../lib/vue-router.js"></script>
+
+</head>
+
+<body>
+
+  <div id="app">
+    <ul v-for="book in books">
+      <li>{{ book.title }}</li>
+    </ul>
+  </div>
+
+  <script type="module">
+    var store = new Vuex.Store({
+      strict: true,
+      state: {
+        books: []
+      },
+      mutations: {
+        setBooks(state, books) {
+          state.books = books
+        }
+      },
+      actions: {
+        getBooks({ commit }) {
+          return new Promise((resolve, reject) => {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://api.jsonbin.io/b/61b4511e62ed886f915e43ae");
+            xhr.onload = function () {
+              if (this.status >= 200 && this.status < 300) {
+                commit('setBooks', JSON.parse(xhr.response))
+                resolve(xhr.response);
+              } else {
+                reject({
+                  status: this.status,
+                  statusText: xhr.statusText
+                });
+              }
+            };
+            xhr.onerror = function () {
+              reject({
+                status: this.status,
+                statusText: xhr.statusText
+              })
+            };
+            xhr.send();
+          })
+        }
+      },
+      getters: {
+        books: state => state.books
+      }
+
+    })
+
+    new Vue({
+      el: '#app',
+      store,
+      computed: {
+        books() {
+          return store.getters.books
+        }
+      },
+      created() {
+        store.dispatch('getBooks')
+          .then((response) => {
+            console.log('result ', response);
+          })
+          .catch((error) => {
+            console.log('error ', error);
+          })
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>
