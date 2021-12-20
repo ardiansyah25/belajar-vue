@@ -16,9 +16,7 @@
 <body>
 
   <div id="app">
-    <ul v-for="book in books">
-      <li>{{ book.title }}</li>
-    </ul>
+
   </div>
 
   <script type="module">
@@ -42,19 +40,19 @@
       el: '#app',
       store,
       computed: {
-        books() {
-          return store.getters.books
-        }
+        name: {
+          get() {
+            return store.getters.name
+          },
+          set(value) {
+            store.commit('setName', value)
+          }
+        },
       },
-      created() {
-        store.dispatch('getBooks')
-          .then((response) => {
-            console.log('result ', response);
-          })
-          .catch((error) => {
-            console.log('error ', error);
-          })
-      }
+      template: `
+       <div>
+           <input v-model='name'>
+        </div>`,
     })
 
   </script>
